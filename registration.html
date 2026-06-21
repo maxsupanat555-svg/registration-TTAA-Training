@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ลงทะเบียนอบรม</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+  :root{
+    --ink:#1c2b24;
+    --paper:#f6f3ea;
+    --card:#ffffff;
+    --rust:#c45a2c;
+    --rust-deep:#9c4420;
+    --teal:#2f5d56;
+    --line:#d8d1bd;
+    --muted:#7a7468;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(28,43,36,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Noto Sans Thai','Space Grotesk',sans-serif;
+    min-height:100vh;
+    padding: 28px 16px 60px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .sheet{
+    width:100%;
+    max-width:620px;
+  }
+
+  .ticket-head{
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:18px 18px 0 0;
+    padding:26px 28px 22px;
+    position:relative;
+    overflow:hidden;
+  }
+  .ticket-head::after{
+    content:"";
+    position:absolute;
+    right:-40px; top:-40px;
+    width:160px;height:160px;
+    border-radius:50%;
+    background:radial-gradient(circle, var(--rust) 0%, transparent 70%);
+    opacity:0.35;
+  }
+  .eyebrow{
+    font-family:'Space Grotesk',sans-serif;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:#d8cdb0;
+    margin:0 0 8px;
+  }
+  .ticket-head h1{
+    margin:0 0 10px;
+    font-size:26px;
+    line-height:1.35;
+    font-weight:700;
+  }
+  .course-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-top:14px;
+  }
+  .course-row{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    font-size:13.5px;
+    color:#eee7d4;
+    line-height:1.5;
+  }
+  .course-row .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--rust);
+    margin-top:6px;
+    flex-shrink:0;
+  }
+
+  .perforation{
+    height:0;
+    border-top:2px dashed #c9bfa0;
+    background:var(--card);
+    position:relative;
+  }
+  .perforation::before,.perforation::after{
+    content:"";
+    position:absolute;
+    top:-10px;
+    width:20px;height:20px;
+    border-radius:50%;
+    background:var(--paper);
+  }
+  .perforation::before{left:-10px;}
+  .perforation::after{right:-10px;}
+
+  form{
+    background:var(--card);
+    border-radius:0 0 18px 18px;
+    padding:30px 28px 32px;
+    box-shadow:0 18px 40px -20px rgba(28,43,36,0.35);
+  }
+
+  .field{margin-bottom:20px;}
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--teal);
+    margin-bottom:7px;
+  }
+  .field .hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:5px;
+  }
+  .req{color:var(--rust);}
+
+  select, input[type="text"], input[type="tel"], input[type="email"]{
+    width:100%;
+    font-family:inherit;
+    font-size:15px;
+    padding:11px 13px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    background:#fdfcf8;
+    color:var(--ink);
+    appearance:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  select{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1L7 7L13 1' stroke='%237a7468' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;
+    background-position: right 14px center;
+    padding-right:36px;
+  }
+  select:focus, input:focus{
+    outline:none;
+    border-color:var(--rust);
+    box-shadow:0 0 0 3px rgba(196,90,44,0.12);
+  }
+  select:disabled{background:#f1efe6;color:var(--muted);}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:480px){.grid2{grid-template-columns:1fr;}}
+
+  .courses{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .course-opt{
+    display:flex;
+    align-items:flex-start;
+    gap:11px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:13px 14px;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .course-opt:hover{border-color:#b9b193;}
+  .course-opt.checked{
+    border-color:var(--teal);
+    background:#f2f6f4;
+  }
+  .course-opt input{
+    margin-top:3px;
+    width:17px;height:17px;
+    accent-color:var(--teal);
+    flex-shrink:0;
+  }
+  .course-opt .ctext{font-size:14px;line-height:1.5;}
+  .course-opt .ctitle{font-weight:600;display:block;margin-bottom:2px;}
+  .course-opt .csub{color:var(--muted);font-size:12.5px;}
+
+  .submit-btn{
+    width:100%;
+    background:var(--rust);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:14px;
+    font-size:15.5px;
+    font-weight:600;
+    font-family:inherit;
+    cursor:pointer;
+    margin-top:6px;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .submit-btn:hover{background:var(--rust-deep);}
+  .submit-btn:active{transform:scale(0.99);}
+  .submit-btn:disabled{background:#c9a892;cursor:not-allowed;}
+
+  .status-msg{
+    margin-top:14px;
+    font-size:13.5px;
+    text-align:center;
+    min-height:18px;
+  }
+  .status-msg.error{color:var(--rust-deep);}
+  .status-msg.ok{color:var(--teal);}
+
+  .success-card{
+    background:var(--card);
+    border-radius:18px;
+    padding:40px 28px;
+    text-align:center;
+    box-shadow:0 18px 40px -20px rgba(28,43,36,0.35);
+  }
+  .success-card .stamp{
+    width:62px;height:62px;
+    border-radius:50%;
+    background:var(--teal);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:30px;
+    margin:0 auto 16px;
+  }
+  .success-card h2{margin:0 0 8px;font-size:20px;}
+  .success-card p{margin:0;color:var(--muted);font-size:14px;line-height:1.6;}
+
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <div id="formView">
+    <div class="ticket-head">
+      <p class="eyebrow">Tourism Trade Training · 25–26 มิ.ย. 2569</p>
+      <h1>แบบฟอร์มลงทะเบียนอบรม</h1>
+      <div class="course-list">
+        <div class="course-row"><span class="dot"></span><span>25 มิ.ย. 69 — หลักการทำทัวร์ต่างประเทศ &amp; ระบบบัญชีและภาษีด้านการท่องเที่ยว</span></div>
+        <div class="course-row"><span class="dot"></span><span>26 มิ.ย. 69 — สูตรลับอัพยอดขาย: ตีแตกการตลาดยุคใหม่ ปิดการขายทัวร์ได้แบบอยู่หมัด</span></div>
+      </div>
+    </div>
+
+    <div class="perforation"></div>
+
+    <form id="regForm">
+
+      <div class="field">
+        <label>ชื่อ-นามสกุล <span class="req">*</span></label>
+        <select id="nameSelect" required>
+          <option value="" disabled selected>— เลือกชื่อของท่าน —</option>
+        </select>
+        <p class="hint">เลือกชื่อจากรายชื่อที่ลงทะเบียนไว้ บริษัทจะกรอกให้อัตโนมัติ</p>
+      </div>
+
+      <div class="field">
+        <label>ชื่อหน่วยงาน / บริษัท <span class="req">*</span></label>
+        <select id="companySelect" required disabled>
+          <option value="" selected>เลือกชื่อก่อน</option>
+        </select>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label>เบอร์ติดต่อ</label>
+          <input type="tel" id="phone" placeholder="08X-XXX-XXXX">
+        </div>
+        <div class="field">
+          <label>ไลน์ไอดี</label>
+          <input type="text" id="lineId" placeholder="Line ID">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>อีเมล</label>
+        <input type="email" id="email" placeholder="name@email.com">
+      </div>
+
+      <div class="field">
+        <label>เลือกหลักสูตรที่ต้องการลงทะเบียน <span class="req">*</span></label>
+        <div class="courses">
+          <label class="course-opt" id="opt1">
+            <input type="checkbox" name="course" value="25 มิ.ย.69 หลักการทำทัวร์ต่างประเทศ & ระบบบัญชีและภาษีด้านการท่องเที่ยว">
+            <span class="ctext">
+              <span class="ctitle">หลักสูตรที่ 1 — 25 มิ.ย. 69</span>
+              <span class="csub">หลักการทำทัวร์ต่างประเทศ &amp; ระบบบัญชีและภาษีด้านการท่องเที่ยว</span>
+            </span>
+          </label>
+          <label class="course-opt" id="opt2">
+            <input type="checkbox" name="course" value="26 มิ.ย.69 สูตรลับอัพยอดขาย: ตีแตกการตลาดยุคใหม่ ปิดการขายทัวร์ได้แบบอยู่หมัด">
+            <span class="ctext">
+              <span class="ctitle">หลักสูตรที่ 2 — 26 มิ.ย. 69</span>
+              <span class="csub">สูตรลับอัพยอดขาย: ตีแตกการตลาดยุคใหม่ ปิดการขายทัวร์ได้แบบอยู่หมัด</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>หมายเหตุ</label>
+        <input type="text" id="notes" placeholder="ข้อความเพิ่มเติม (ถ้ามี)">
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">ส่งแบบฟอร์มลงทะเบียน</button>
+      <p class="status-msg" id="statusMsg"></p>
+    </form>
+  </div>
+
+  <div id="successView" class="success-card hidden">
+    <div class="stamp">✓</div>
+    <h2>ลงทะเบียนสำเร็จ</h2>
+    <p>ขอบคุณที่ลงทะเบียนเข้าร่วมอบรม ทีมงานจะติดต่อยืนยันรายละเอียดทางอีเมลหรือไลน์ที่ท่านระบุไว้</p>
+  </div>
+
+</div>
+
+<script>
+  // ---- Embedded name/company directory (from uploaded roster) ----
+  const PEOPLE = [{"name": "Hajime Watanabe", "company": "KRABI ORIENTAL TRAVEL AGENCY"}, {"name": "Karakate Changkom", "company": "O S Tour"}, {"name": "MS.PEERAYA SONGNU", "company": "SMILE TICKET AND TOUR"}, {"name": "Miss Yardfon Chinsophonsap", "company": "Luxe Voyage Co.,Ltd"}, {"name": "NANNABHAT DUANGMAN", "company": "Around group travel and trip"}, {"name": "Sirikorn  Boonyasiri", "company": "Sweetland Travel and Tours"}, {"name": "Thidarat Phromdan", "company": "Phuket Jet Tour"}, {"name": "คริษฐากรณ์ สกุลศุภพงศ์", "company": "อัครวณิชสกุล"}, {"name": "ชมพูนุต คงมีสุข", "company": "Sea Angel"}, {"name": "ชาลิสา พลจรัส", "company": "Indosmilesouthservices"}, {"name": "ชาลิสา พลจรัส", "company": "บริษัท โคกกลอย ทราเวล เซ็นเตอร์ จำกัด"}, {"name": "ช่อมาศ สิทธิเชนทร์", "company": "บจก. กรีน แอปเปิ้ล โวยาจ"}, {"name": "ฐิตาภรณ์ โทประภัทร", "company": "Khon Kaen Scholar Co., Ltd."}, {"name": "ณรงค์ชัย ไชยรักษา", "company": "Major Tour Phuket"}, {"name": "ดร.ชัญญา ตันสกุล", "company": "บจก.เดอะ คริสตัล ทัวร์ 1992"}, {"name": "ต่อพงษ์ หาญวรศาสตร์", "company": "บริษัท ซีค ทราเวล จำกัด"}, {"name": "ทัศนีย์  สุมาตรา", "company": "Quality Tour"}, {"name": "ธนิตา เรืองสงค์", "company": "หจก พัทธพรธุรกิจ"}, {"name": "ธิดารัตน์ พรมแดน", "company": "บ.ภูเก็ตเจ๊ตทัวร์ จก."}, {"name": "นางสาว ปภัสรินทร์ ภัทรเมธีเศรษฐ์", "company": "Amber Phuket travel"}, {"name": "นางสาว เบญจมาศ สงคราม", "company": "Amber Phuket travel"}, {"name": "นางสาวเสาวณีย์  ทาหว่างกัน", "company": "ห้างหุ้นส่วนจำกัดปกาไสทัวร์"}, {"name": "นางสาวเสาวลักษณ์  เสือคำ", "company": "ห้างหุ้นส่วนจำกัดปกาไสทัวร์"}, {"name": "นายธนกฤต ว่องวิทยา", "company": "Khaosok Horizon"}, {"name": "นายธนชัย ว่องวิทยา", "company": "Khao Sok Horizon"}, {"name": "นิศารัตน์ ชัยชนะโชติวีรกุล", "company": "บริษัท สมุย ลุค จำกัด"}, {"name": "นิศารัตน์ อัยราชธนารักษ์", "company": "บริษัท ฮอลิเดย์ สตอรี่ จำกัด"}, {"name": "นิสิตา ว่องวิทยา", "company": "สิรีนทัวร์"}, {"name": "พิสมัย ตันสกุล", "company": "PARAMOUNT TRAVEL SERVICE"}, {"name": "ภคมน นพคุณนภดล", "company": "เอ็นเจ ทิกเก็ต แอนด์ ทัวร์ เซอร์วิส (เกาะแก้ว)"}, {"name": "มาศมิศรา เชื้อทอง", "company": "บริษัท ซีค ทราเวล จำกัด"}, {"name": "รฐาพัชร์ ศิลาวรเศรษฐ์", "company": "See sea sky travel"}, {"name": "รสกร ตั้งวินิจ", "company": "บริษัทสวีทแลนด์ ภูเก็ต จำกัด"}, {"name": "ศุภณัฐดิ์ เรียนไธสง", "company": "บจก. ขอนแก่นสกอล่าร์"}, {"name": "ศุภวัฒน์ พรกุลวัฒน์", "company": "Prince Andaman Travel"}, {"name": "สิริกร นทีธร", "company": "Your Events & Tours Co., Ltd."}, {"name": "สุรัฐา  สุรเชษฐ์คมสัน", "company": "In PHUKET House & Sightseeing"}, {"name": "อรทัย ดีอ้าย", "company": "ขอบฟ้า ทราเวล"}, {"name": "อัมพิกา แก้วช่วย", "company": "บจก.ฮอลิเดย์สตอรี่"}, {"name": "เจริญขวัญ แต่เดิมพัน", "company": "Major Tour Phuket"}];
+
+  // ---- IMPORTANT: paste your Google Apps Script Web App URL here ----
+  const SHEET_ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+  const nameSelect = document.getElementById('nameSelect');
+  const companySelect = document.getElementById('companySelect');
+
+  // Build unique name list, keep map of name -> [companies]
+  const nameToCompanies = {};
+  PEOPLE.forEach(p => {
+    if (!nameToCompanies[p.name]) nameToCompanies[p.name] = [];
+    if (!nameToCompanies[p.name].includes(p.company)) nameToCompanies[p.name].push(p.company);
+  });
+
+  Object.keys(nameToCompanies).sort((a,b)=>a.localeCompare(b,'th')).forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    nameSelect.appendChild(opt);
+  });
+
+  // Also allow free text if name isn't on the list
+  const otherOpt = document.createElement('option');
+  otherOpt.value = "__OTHER__";
+  otherOpt.textContent = "ไม่พบชื่อของท่าน / กรอกเอง";
+  nameSelect.appendChild(otherOpt);
+
+  let manualNameInput = null;
+  let manualCompanyInput = null;
+
+  nameSelect.addEventListener('change', () => {
+    const val = nameSelect.value;
+
+    // remove any previous manual inputs
+    if (manualNameInput) { manualNameInput.remove(); manualNameInput = null; }
+
+    if (val === "__OTHER__") {
+      companySelect.innerHTML = '<option value="" selected>กรอกชื่อหน่วยงานด้านล่าง</option>';
+      companySelect.disabled = true;
+      companySelect.style.display = 'none';
+
+      if (!manualCompanyInput) {
+        manualCompanyInput = document.createElement('input');
+        manualCompanyInput.type = 'text';
+        manualCompanyInput.id = 'companyManual';
+        manualCompanyInput.placeholder = 'กรอกชื่อหน่วยงาน / บริษัท';
+        companySelect.parentNode.appendChild(manualCompanyInput);
+      }
+
+      manualNameInput = document.createElement('input');
+      manualNameInput.type = 'text';
+      manualNameInput.id = 'nameManual';
+      manualNameInput.placeholder = 'กรอกชื่อ-นามสกุล';
+      manualNameInput.style.marginTop = '8px';
+      nameSelect.parentNode.appendChild(manualNameInput);
+      return;
+    }
+
+    if (manualCompanyInput) { manualCompanyInput.remove(); manualCompanyInput = null; }
+    companySelect.style.display = '';
+    companySelect.disabled = false;
+    companySelect.innerHTML = '';
+    const companies = nameToCompanies[val] || [];
+    companies.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      companySelect.appendChild(o);
+    });
+    if (companies.length === 1) companySelect.value = companies[0];
+  });
+
+  // Course checkbox highlight
+  document.querySelectorAll('.course-opt input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      cb.closest('.course-opt').classList.toggle('checked', cb.checked);
+    });
+  });
+
+  const form = document.getElementById('regForm');
+  const statusMsg = document.getElementById('statusMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusMsg.textContent = '';
+    statusMsg.className = 'status-msg';
+
+    const nameVal = nameSelect.value === '__OTHER__'
+      ? (document.getElementById('nameManual')?.value || '').trim()
+      : nameSelect.value;
+    const companyVal = nameSelect.value === '__OTHER__'
+      ? (document.getElementById('companyManual')?.value || '').trim()
+      : companySelect.value;
+
+    const courses = Array.from(document.querySelectorAll('input[name=course]:checked')).map(c => c.value);
+
+    if (!nameVal) { statusMsg.textContent = 'กรุณาเลือกหรือกรอกชื่อ-นามสกุล'; statusMsg.className = 'status-msg error'; return; }
+    if (!companyVal) { statusMsg.textContent = 'กรุณาเลือกหรือกรอกชื่อหน่วยงาน'; statusMsg.className = 'status-msg error'; return; }
+    if (courses.length === 0) { statusMsg.textContent = 'กรุณาเลือกหลักสูตรอย่างน้อย 1 หลักสูตร'; statusMsg.className = 'status-msg error'; return; }
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      name: nameVal,
+      company: companyVal,
+      phone: document.getElementById('phone').value.trim(),
+      lineId: document.getElementById('lineId').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      courses: courses.join(' | '),
+      notes: document.getElementById('notes').value.trim()
+    };
+
+    if (SHEET_ENDPOINT.indexOf("https://script.google.com/macros/s/AKfycby6oDENV5YhwA_e0j8zLs94uT9JBB4NkiFdVoO53m8KBgavIwbPa01-I7toW9SokZG4Gg/exec") === 0) {
+
+      statusMsg.className = 'status-msg error';
+      console.log('Form payload (not sent, no endpoint configured):', payload);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'กำลังส่งข้อมูล...';
+
+    try {
+      await fetch(SHEET_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      document.getElementById('formView').classList.add('hidden');
+      document.getElementById('successView').classList.remove('hidden');
+    } catch (err) {
+      statusMsg.textContent = 'เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง';
+      statusMsg.className = 'status-msg error';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'ส่งแบบฟอร์มลงทะเบียน';
+    }
+  });
+</script>
+
+</body>
+</html>
